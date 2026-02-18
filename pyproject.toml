@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cowtotext"
+version = "1.0.0"
+description = "Real-time audio transcription and translation using Whisper and Argos Translate using Python."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Ashley", email = "info@meisgaming.net"}
+]
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "faster-whisper>=1.0.0",
+    "argostranslate>=1.11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/MeIsGaming/cow-to-text"
+Documentation = "https://github.com/MeIsGaming/cow-to-text#readme"
+Repository = "https://github.com/MeIsGaming/cow-to-text.git"
+Issues = "https://github.com/MeIsGaming/cow-to-text/issues"
+
+[project.scripts]
+cowtotext = "cowtotext:main"
+
+[tool.setuptools]
+py-modules = ["cowtotext"]
