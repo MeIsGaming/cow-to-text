@@ -303,7 +303,19 @@ finally:
     audio_queue.put((None, None))
     transcribed_queue.put((None, None))
 
-    time.sleep(0.5)
+    time.sleep(0.2)
+
+    # ffmpeg beenden - sauber und schnell
+    if process and process.poll() is None:
+        try:
+            process.terminate()
+            process.wait(timeout=0.5)
+        except (subprocess.TimeoutExpired, Exception):
+            try:
+                process.kill()
+                process.wait(timeout=0.5)
+            except Exception:
+                pass
 
     # Gebe restliche Items aus
     while not output_queue.empty():
@@ -317,17 +329,12 @@ finally:
         except queue.Empty:
             break
 
-    # ffmpeg beenden
-    if process.poll() is None:
-        process.terminate()
-        try:
-            process.wait(timeout=1)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait()
-
     # Threads beenden
     for t in transcribe_threads + translate_threads:
-        t.join(timeout=0.5)
+        if t.is_alive():
+            t.join(timeout=0.5)
 
     print(f"{Colors.GREEN}✓ Program terminated.{Colors.RESET}\n")
+    
+    # Sauberer Exit
+    sys.exit(0)
