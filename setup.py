@@ -15,7 +15,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/MeIsGaming/cow-to-text",
-    py_modules=["cowtotext"],
+    py_modules=["cowtotext", "cowtotext_main"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.11",
@@ -28,7 +28,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "cowtotext=cowtotext:print_header",
+            "cowtotext=cowtotext_main:main",
         ],
     },
 )

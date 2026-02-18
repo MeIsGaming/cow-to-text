@@ -1,12 +1,13 @@
-import subprocess
-import sys
-import numpy as np
-from faster_whisper import WhisperModel
 import argostranslate.package
 import argostranslate.translate
-import threading
+import numpy as np
 import queue
+import subprocess
+import sys
+import threading
 import time
+
+from faster_whisper import WhisperModel
 
 # Farben
 
@@ -135,8 +136,19 @@ FROM_LANG = from_lang_sel.split()[0]
 to_lang_sel = select_option("Select target language:", lang_options)
 TO_LANG = to_lang_sel.split()[0]
 
-DEVICE = "cuda"
-COMPUTE_TYPE = "float16"
+# Auto-detect CUDA availability
+try:
+    import torch
+    if torch.cuda.is_available():
+        DEVICE = "cuda"
+        COMPUTE_TYPE = "float16"
+    else:
+        DEVICE = "cpu"
+        COMPUTE_TYPE = "float32"
+except:
+    DEVICE = "cpu"
+    COMPUTE_TYPE = "float32"
+
 CHUNK_SIZE = 16000 * 2 * (CHUNK_SIZE_MS / 1000)
 CHUNK_OVERLAP = 16000 * 2 * 0.25
 
@@ -150,7 +162,18 @@ print_header("🔄 INITIALIZATION")
 
 print(f"{Colors.CYAN}→ Loading Whisper model ({MODEL_SIZE})...{Colors.RESET}",
       end=" ", flush=True)
-model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type=COMPUTE_TYPE)
+try:
+    model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type=COMPUTE_TYPE)
+except ValueError as e:
+    if "CUDA" in str(e):
+        print(
+            f"\n{Colors.YELLOW}⚠ CUDA not available, falling back to CPU...{Colors.RESET}")
+        DEVICE = "cpu"
+        COMPUTE_TYPE = "float32"
+        model = WhisperModel(MODEL_SIZE, device=DEVICE,
+                             compute_type=COMPUTE_TYPE)
+    else:
+        raise
 print(f"{Colors.GREEN}✓{Colors.RESET}")
 
 print(f"{Colors.CYAN}→ Loading translation model...{Colors.RESET}",
