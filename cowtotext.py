@@ -207,11 +207,14 @@ def transcribe_worker():
         if audio is None:
             break
 
-        segments, _ = model.transcribe(audio, language=FROM_LANG)
-        for segment in segments:
-            original = segment.text.strip()
-            if original:
-                transcribed_queue.put((chunk_id, original))
+        try:
+            segments, _ = model.transcribe(audio, language=FROM_LANG)
+            for segment in segments:
+                original = segment.text.strip()
+                if original:
+                    transcribed_queue.put((chunk_id, original))
+        except Exception as e:
+            print(f"{Colors.RED}Transcription error: {e}{Colors.RESET}")
 
 
 def translate_worker():
@@ -221,8 +224,11 @@ def translate_worker():
         if original is None:
             break
 
-        translation = translator.translate(original)
-        output_queue.put((original, translation))
+        try:
+            translation = translator.translate(original)
+            output_queue.put((original, translation))
+        except Exception as e:
+            print(f"{Colors.RED}Translation error: {e}{Colors.RESET}")
 
 
 # Starte Worker Threads
@@ -252,6 +258,7 @@ print_header("🎙️  LIVE TRANSLATION")
 print(f"{Colors.YELLOW}(Press Ctrl+C to exit){Colors.RESET}\n")
 
 buffer = b""
+last_chunk_time = time.time()
 
 try:
     while True:
@@ -261,13 +268,19 @@ try:
 
         buffer += data
 
-        if len(buffer) >= CHUNK_SIZE:
-            audio = np.frombuffer(buffer[:int(CHUNK_SIZE)], np.int16).astype(
-                np.float32) / 32768.0
-            buffer = buffer[int(CHUNK_SIZE - CHUNK_OVERLAP):]
+        if len(buffer) >= int(CHUNK_SIZE):
+            # Extract exact chunk size
+            chunk_bytes = int(CHUNK_SIZE)
+            audio_chunk = buffer[:chunk_bytes]
+            audio = np.frombuffer(audio_chunk, np.int16).astype(np.float32) / 32768.0
+            
+            # Keep overlap for continuity
+            overlap_bytes = int(CHUNK_OVERLAP)
+            buffer = buffer[chunk_bytes - overlap_bytes:]
 
             chunk_id = get_next_chunk_id()
             audio_queue.put((chunk_id, audio))
+            last_chunk_time = time.time()
 
         # Output
         while True:
