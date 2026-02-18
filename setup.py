@@ -28,7 +28,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "cowtotext=cowtotext_main",
+            "cowtotext=cowtotext_main:main",
         ],
     },
 )

@@ -35,7 +35,7 @@ Repository = "https://github.com/MeIsGaming/cow-to-text.git"
 Issues = "https://github.com/MeIsGaming/cow-to-text/issues"
 
 [project.scripts]
-cowtotext = "cowtotext_main"
+cowtotext = "cowtotext_main:main"
 
 [tool.setuptools]
 py-modules = ["cowtotext", "cowtotext_main"]
