@@ -1,7 +1,7 @@
 # Maintainer: Ashley <info@meisgaming.net>
 pkgname=cowtotext
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Real-time audio transcription and translation tool using Whisper and Argos Translate"
 arch=('x86_64')
 url="https://github.com/MeIsGaming/cow-to-text"
