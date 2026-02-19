@@ -1,7 +1,7 @@
 # Maintainer: Ashley <info@meisgaming.net>
 pkgname=cowtotext
 pkgver=1.0.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Real-time audio transcription and translation tool using Whisper and Argos Translate"
 arch=('x86_64')
 url="https://github.com/MeIsGaming/cow-to-text"
@@ -16,28 +16,26 @@ build() {
     cd cow-to-text
 
     # Build wheel
-    python3.11 -m build --wheel --no-isolation
+    python -m build --wheel --no-isolation
 }
 
 package() {
     cd cow-to-text
 
-    # Install wheel files into package root
-    python3.11 -m installer --destdir="$pkgdir" dist/*.whl
+    # Create isolated Python 3.11 runtime environment
+    python3.11 -m venv "$pkgdir/usr/lib/cowtotext/venv"
 
-    # Bundle runtime Python dependencies in an isolated vendor directory
-    python3.11 -m pip install \
+    # Install app and all runtime dependencies into the bundled venv
+    "$pkgdir/usr/lib/cowtotext/venv/bin/pip" install \
         --no-cache-dir \
         --disable-pip-version-check \
-        --target "$pkgdir/usr/lib/cowtotext/vendor" \
-        -r requirements.txt
+        dist/*.whl
 
     # Ensure launcher uses bundled dependencies
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/cowtotext" << 'EOF'
 #!/bin/sh
-export PYTHONPATH="/usr/lib/cowtotext/vendor${PYTHONPATH:+:$PYTHONPATH}"
-exec /usr/bin/python3.11 -m cowtotext_main "$@"
+exec /usr/lib/cowtotext/venv/bin/python -m cowtotext_main "$@"
 EOF
     chmod 755 "$pkgdir/usr/bin/cowtotext"
     
