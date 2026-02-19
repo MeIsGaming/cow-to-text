@@ -14,26 +14,16 @@ sha256sums=('SKIP')
 
 build() {
     cd cow-to-text
-    
-    # Create temporary venv for build
-    python -m venv build_venv
-    source build_venv/bin/activate
-    
-    # Install build deps and requirements
-    pip install --upgrade pip setuptools wheel build installer setuptools_scm
-    pip install -r requirements.txt
-    
+
     # Build wheel
     python -m build --wheel --no-isolation
-    
-    deactivate
 }
 
 package() {
     cd cow-to-text
-    
-    # Install wheel WITH all dependencies to package
-    python -m pip install --root="$pkgdir" --no-cache-dir dist/*.whl
+
+    # Install wheel files into package root
+    python -m installer --destdir="$pkgdir" dist/*.whl
     
     # Install license and docs
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
