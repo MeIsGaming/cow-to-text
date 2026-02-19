@@ -82,7 +82,7 @@ Once configured, the translator will:
 ### Model Sizes
 - **tiny**: Fastest, lower quality
 - **base**: Balanced
-- **small**: Good quality
+- **small**: Good quality (works best with pl->en i found out)
 - **medium**: High quality
 - **large**: Highest quality, slowest
 
