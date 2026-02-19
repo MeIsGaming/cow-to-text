@@ -1,13 +1,13 @@
 # Maintainer: Ashley <info@meisgaming.net>
 pkgname=cowtotext
 pkgver=1.0.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Real-time audio transcription and translation tool using Whisper and Argos Translate"
 arch=('x86_64')
 url="https://github.com/MeIsGaming/cow-to-text"
 license=('MIT')
-depends=('python' 'ffmpeg' 'libpulse')
-makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-pip')
+depends=('python311' 'ffmpeg' 'libpulse')
+makedepends=('git')
 optdepends=('cuda: For GPU acceleration')
 source=("git+${url}.git#branch=main")
 sha256sums=('SKIP')
@@ -16,17 +16,17 @@ build() {
     cd cow-to-text
 
     # Build wheel
-    python -m build --wheel --no-isolation
+    python3.11 -m build --wheel --no-isolation
 }
 
 package() {
     cd cow-to-text
 
     # Install wheel files into package root
-    python -m installer --destdir="$pkgdir" dist/*.whl
+    python3.11 -m installer --destdir="$pkgdir" dist/*.whl
 
     # Bundle runtime Python dependencies in an isolated vendor directory
-    python -m pip install \
+    python3.11 -m pip install \
         --no-cache-dir \
         --disable-pip-version-check \
         --target "$pkgdir/usr/lib/cowtotext/vendor" \
@@ -37,7 +37,7 @@ package() {
     cat > "$pkgdir/usr/bin/cowtotext" << 'EOF'
 #!/bin/sh
 export PYTHONPATH="/usr/lib/cowtotext/vendor${PYTHONPATH:+:$PYTHONPATH}"
-exec /usr/bin/python -m cowtotext_main "$@"
+exec /usr/bin/python3.11 -m cowtotext_main "$@"
 EOF
     chmod 755 "$pkgdir/usr/bin/cowtotext"
     
