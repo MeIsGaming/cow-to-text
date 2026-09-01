@@ -1,3 +1,7 @@
+> **This repository has moved.**
+> It now lives at <https://git.purrr.chat/ashley/cowtotext>.
+> This copy is archived and receives no further updates.
+
 # COW-TO-TEXT LIVE TRANSLATOR 🎤
 
 A real-time audio transcription and translation tool that captures live audio from your system, transcribes it using OpenAI's Whisper model, and translates it to your target language.
